@@ -1,0 +1,54 @@
+WYNIKI:
+Test: 1000 pakietów x 1024 bajtów
+
+[*] Testuję TCP...
+[TCP] Czas: 0.0606s
+[TCP] Średnio na pakiet: 0.0606 ms
+
+[*] Testuję UDP...
+[UDP] Czas: 0.0792s
+[UDP] Średnio na pakiet: 0.0792 ms
+[UDP] Utracone pakiety: 0/1000 (0.0%)
+
+WYNIKI:
+TCP był szybszy o 0.0187s (23.6%)
+
+
+ODPOWIEDZI NA PYTANIA:
+
+1. Dla którego z gniazd czas jest krótszy?
+   Krótszy czas uzyskano dla TCP (0.0606 s) w porównaniu do UDP (0.0792 s).
+   Oznacza to, że w tym teście TCP było szybsze o 0.0187 s (23.6%).
+
+2. Z czego wynika krótszy czas?
+   W tym przypadku krótszy czas TCP wynika głównie ze sposobu działania programu i środowiska testowego:
+
+    - test był wykonywany lokalnie (127.0.0.1), więc opóźnienia sieciowe są minimalne,
+    - brak utraty pakietów (0%), więc TCP nie musiał retransmitować danych,
+    - TCP korzysta z optymalizacji systemowych (np. buforowanie i łączenie pakietów),
+    - w UDP dla każdego pakietu wykonywane jest osobne sendto() i recvfrom(), co zwiększa narzut operacji,
+    - w praktyce w kodzie UDP działa bardziej „pakietowo”, a TCP jako ciągły strumień — to daje TCP przewagę w tym scenariuszu.
+
+   Czyli: mimo że UDP jest prostsze, tutaj narzut wywołań systemowych i brak optymalizacji strumieniowej sprawił, że było wolniejsze.
+
+3. Zalety i wady:
+
+   TCP:
+    ✓ gwarancja dostarczenia danych
+    ✓ zachowanie kolejności pakietów
+    ✓ kontrola przepływu i przeciążenia
+    ✓ retransmisja w razie błędów
+    ✓ dobre wykorzystanie połączenia przy większej liczbie danych
+
+    ✗ większy narzut (handshake, potwierdzenia)
+    ✗ może powodować opóźnienia przy retransmisjach
+
+UDP:
+    ✓ brak nawiązywania połączenia (szybki start)
+    ✓ mały narzut protokołu
+    ✓ dobre do aplikacji czasu rzeczywistego (gry, streaming)
+
+    ✗ brak gwarancji dostarczenia danych
+    ✗ możliwa utrata lub zmiana kolejności pakietów
+    ✗ brak kontroli przeciążenia
+    ✗ w tym teście większy narzut przez częste wywołania send/recv
